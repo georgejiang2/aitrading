@@ -1,1 +1,5 @@
+Run in terminal
+
 source ~/miniforge3/bin/activate
+cd website
+python app.py

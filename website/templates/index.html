@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Graphs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .loading {
+            display: none;
+            margin-left: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Option Volume Analysis</h1>
+
+    <img src="{{ url_for('static', filename='test2.png') }}" alt="Option Volume Graph" id="graphImage">
+
+    <h2>Generate New Graph</h2>
+    <button id="runScriptButton">Run Analysis Script</button>
+    <span class="loading" id="loadingIndicator">Processing... Please wait</span>
+
+    <div class="status" id="statusMessage"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('runScriptButton');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const statusMessage = document.getElementById('statusMessage');
+            const graphImage = document.getElementById('graphImage');
+            
+            button.addEventListener('click', async function() {
+                // Disable button and show loading indicator
+                button.disabled = true;
+                loadingIndicator.style.display = 'inline';
+                statusMessage.textContent = 'Running script...';
+                statusMessage.style.backgroundColor = '#f0f0f0';
+                
+                try {
+                    // Make an AJAX request to your server endpoint that runs the Python script
+                    const response = await fetch('/run_script', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        statusMessage.textContent = 'Script executed successfully!';
+                        statusMessage.style.backgroundColor = '#dff0d8';
+                        
+                        // Refresh the image by adding a timestamp query parameter to bypass cache
+                        const timestamp = new Date().getTime();
+                        graphImage.src = `{{ url_for('static', filename='test2.png') }}?t=${timestamp}`;
+                    } else {
+                        statusMessage.textContent = 'Error: ' + result.error;
+                        statusMessage.style.backgroundColor = '#f2dede';
+                    }
+                } catch (error) {
+                    statusMessage.textContent = 'Error: Could not connect to server.';
+                    statusMessage.style.backgroundColor = '#f2dede';
+                    console.error('Error:', error);
+                } finally {
+                    // Re-enable button and hide loading indicator
+                    button.disabled = false;
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

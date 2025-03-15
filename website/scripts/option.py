@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 # Replace '^SPX' with the stock symbol you're interested in
 symbol = '^SPX'
@@ -86,6 +87,7 @@ if expiration_date in expiration_dates:
 
     # Show the plot
     plt.tight_layout()
-    plt.savefig("website/static/test.png", dpi=300)
+    image_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'test2.png')
+    plt.savefig(image_path, dpi=300)
 else:
     print(f"Expiration date {expiration_date} is not available for {symbol}.")
