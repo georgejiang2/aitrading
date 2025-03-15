@@ -57,12 +57,22 @@
     <img src="{{ url_for('static', filename='test2.png') }}" alt="Option Volume Graph" id="graphImage">
 
     <h2>Generate New Graph</h2>
+
+    <label for="userInput1">Ticker symbol:</label>
+    <input type="text" id="userInput1" placeholder="Type ticker symbol, for example ^SPX" style="width: 300px;">
+    <br><br>
+
+    <label for="userInput2">Date:</label>
+    <input type="text" id="userInput2" placeholder="Type date, for example 2025-03-18" style="width: 300px;">
+    <br><br>
+    
     <button id="runScriptButton">Run Analysis Script</button>
     <span class="loading" id="loadingIndicator">Processing... Please wait</span>
 
     <div class="status" id="statusMessage"></div>
 
     <script>
+        
         document.addEventListener('DOMContentLoaded', function() {
             const button = document.getElementById('runScriptButton');
             const loadingIndicator = document.getElementById('loadingIndicator');
@@ -77,12 +87,19 @@
                 statusMessage.style.backgroundColor = '#f0f0f0';
                 
                 try {
+                    var inputText1 = document.getElementById("userInput1").value;
+                    var inputText2 = document.getElementById("userInput2").value;
+                    const data = {
+                        inputText1: inputText1,
+                        inputText2: inputText2
+                    };
                     // Make an AJAX request to your server endpoint that runs the Python script
                     const response = await fetch('/run_script', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
+                        body: JSON.stringify(data)
                     });
                     
                     const result = await response.json();
